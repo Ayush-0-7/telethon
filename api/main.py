@@ -28,7 +28,7 @@ def main():
 client = TelegramClient('session_name', API_ID, API_HASH)
 
 # Initialize Firebase
-cred = credentials.Certificate("credentials.json")
+cred = credentials.Certificate("./api/credentials.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 doc_ref = db.collection('lootndeals')
