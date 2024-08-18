@@ -8,21 +8,17 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from threading import Thread
-
+from api.keep_alive import keep_alive
+keep_alive()
 # Load environment variables
 load_dotenv()
 API_ID = os.getenv('API_ID')
 API_HASH = os.getenv('API_HASH')
-PVT_KEY = os.getenv('PVT_KEY')
-PVT_ID = os.getenv('PVT_ID')
 
 # Initialize Flask app
 app = Flask(__name__)
 
 # Flask route to confirm the server is running
-@app.route('/')
-def main():
-    return "It's running fine ...."
 
 # Initialize Telegram client
 client = TelegramClient('session_name', API_ID, API_HASH)
@@ -78,15 +74,6 @@ async def my_event_handler(event):
         except Exception as err:
             print(f"An error occurred: {err}")
 
-def run_flask():
-    app.run(host='0.0.0.0', port=8080)
-
-# Run Flask in a separate thread
-if __name__ == '__main__':
-    # Start Flask server in a separate thread
-    flask_thread = Thread(target=run_flask)
-    flask_thread.start()
-    
     # Start Telegram client
     client.start()
     client.run_until_disconnected()
