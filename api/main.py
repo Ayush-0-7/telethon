@@ -1,3 +1,4 @@
+from flask import Flask
 from telethon import TelegramClient, events
 import requests
 import json
@@ -6,23 +7,32 @@ from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-from .keep_alive import keep_alives
-keep_alives()
+from threading import Thread
+
+# Load environment variables
 load_dotenv()
 API_ID = os.getenv('API_ID')
 API_HASH = os.getenv('API_HASH')
 PVT_KEY = os.getenv('PVT_KEY')
 PVT_ID = os.getenv('PVT_ID')
 
+# Initialize Flask app
+app = Flask(__name__)
+
+# Flask route to confirm the server is running
+@app.route('/')
+def main():
+    return "It's running fine ...."
+
 # Initialize Telegram client
-client = TelegramClient('session_name',API_ID, API_HASH)
+client = TelegramClient('session_name', API_ID, API_HASH)
 
 # Initialize Firebase
 cred = credentials.Certificate({
   "type": "service_account",
   "project_id": "lootcase-5f198",
   "private_key_id": PVT_ID,
-  "private_key":  PVT_KEY.replace('\\n', '\n'),
+  "private_key": PVT_KEY.replace('\\n', '\n'),
   "client_email": "firebase-adminsdk-uumst@lootcase-5f198.iam.gserviceaccount.com",
   "client_id": "102461053564389743283",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
@@ -30,7 +40,7 @@ cred = credentials.Certificate({
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-uumst%40lootcase-5f198.iam.gserviceaccount.com",
   "universe_domain": "googleapis.com"
-})  # Check if the file path is correct
+})
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 doc_ref = db.collection('lootndeals')
@@ -70,7 +80,6 @@ async def my_event_handler(event):
                 'product_link': product_data.get('product_link', '')
             }
             
-            
             doc_ref.add(product_obj)
             print("Formatted Product Object:", product_obj)
         
@@ -81,5 +90,15 @@ async def my_event_handler(event):
         except Exception as err:
             print(f"An error occurred: {err}")
 
-client.start()
-client.run_until_disconnected()
+def run_flask():
+    app.run(host='0.0.0.0', port=8080)
+
+# Run Flask in a separate thread
+if __name__ == '__main__':
+    # Start Flask server in a separate thread
+    flask_thread = Thread(target=run_flask)
+    flask_thread.start()
+    
+    # Start Telegram client
+    client.start()
+    client.run_until_disconnected()
