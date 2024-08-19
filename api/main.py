@@ -21,13 +21,11 @@ app = Flask(__name__)
 # Initialize Telegram client
 if session_string:
     # Reuse the session string
-    client = TelegramClient(StringSession(session_string), API_ID, API_HASH)
+    client = TelegramClient(StringSession(session_string), API_ID, API_HASH).start(bot_token=BOT_TOKEN)
 else:
     # Create a new session and store the session string after the first run
-    client = TelegramClient(StringSession(), API_ID, API_HASH)
+    client = TelegramClient(StringSession(), API_ID, API_HASH).start(bot_token=BOT_TOKEN)
 with client:
-    # Start the client
-    client.start(bot_token=BOT_TOKEN)
     # Save the session string to the environment or a secure location
     session_string = client.session.save()    
 # Initialize Firebase
