@@ -7,21 +7,18 @@ from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+
 # Load environment variables
 load_dotenv()
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 API_ID = os.getenv('API_ID')
 API_HASH = os.getenv('API_HASH')
 
-
 # Initialize Flask app
 app = Flask(__name__)
 
-# Flask route to confirm the server is running
-
 # Initialize Telegram client
-from telethon.sessions import MemorySession
-client = TelegramClient(MemorySession(), api_id=API_ID, api_hash=API_HASH).start(bot_token=BOT_TOKEN)
+client = TelegramClient('./api/session_name.session', api_id=API_ID, api_hash=API_HASH).start(bot_token=BOT_TOKEN)
 
 # Initialize Firebase
 cred = credentials.Certificate("./api/credentials.json")
@@ -29,18 +26,21 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 doc_ref = db.collection('lootndeals')
 
-# Declare the variable outside the function
-last_message = None
 channels_to_listen = ['A and Harsh', 'DealzArena ™ (Official)', 'LOOT DEALS OFFERS', 'Loot Deals [@magiXdeals]']
+
 @app.route('/')
 def main():
-    return "Running , Now go to /tele ...."
+    return "Running, Now go to /tele ..."
+
 @app.route('/tele')
 def tele():
-    @client.on(events.NewMessage())
-    async def my_event_handler(event):
-     global last_message  # Declare the variable as global to modify it
-     if event.chat and event.chat.title in channels_to_listen:
+    # No need to define the handler here; just start the client
+    return "Telegram client is already running and listening."
+
+# Define the Telegram event handler outside the Flask route
+@client.on(events.NewMessage())
+async def my_event_handler(event):
+    if event.chat and event.chat.title in channels_to_listen:
         last_message = event.raw_text  # Store the message in the variable
         
         # Send the last_message to the Flask server as a POST request
@@ -78,6 +78,9 @@ def tele():
         except Exception as err:
             print(f"An error occurred: {err}")
 
-    # Start Telegram client
-    client.start()
-    client.run_until_disconnected()
+# Start the Telegram client outside the route handlers
+client.start()
+client.run_until_disconnected()
+
+if __name__ == '__main__':
+    app.run(debug=True)
