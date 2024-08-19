@@ -7,9 +7,6 @@ from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-from threading import Thread
-from api.keep_alive import keep_alive
-keep_alive()
 # Load environment variables
 load_dotenv()
 API_ID = os.getenv('API_ID')
@@ -32,11 +29,15 @@ doc_ref = db.collection('lootndeals')
 # Declare the variable outside the function
 last_message = None
 channels_to_listen = ['A and Harsh', 'DealzArena ™ (Official)', 'LOOT DEALS OFFERS', 'Loot Deals [@magiXdeals]']
-
-@client.on(events.NewMessage())
-async def my_event_handler(event):
-    global last_message  # Declare the variable as global to modify it
-    if event.chat and event.chat.title in channels_to_listen:
+@app.route('/')
+def main():
+    return "Running , Now go to /tele ...."
+@app.route('/tele')
+def tele():
+    @client.on(events.NewMessage())
+    async def my_event_handler(event):
+     global last_message  # Declare the variable as global to modify it
+     if event.chat and event.chat.title in channels_to_listen:
         last_message = event.raw_text  # Store the message in the variable
         
         # Send the last_message to the Flask server as a POST request
@@ -74,6 +75,6 @@ async def my_event_handler(event):
         except Exception as err:
             print(f"An error occurred: {err}")
 
-# Start Telegram client
-client.start()
-client.run_until_disconnected()
+    # Start Telegram client
+    client.start()
+    client.run_until_disconnected()
