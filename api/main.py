@@ -7,9 +7,10 @@ from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-
+from telethon.sessions import StringSession
 # Load environment variables
 load_dotenv()
+session_string = os.getenv('SESSION_STRING')
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 API_ID = os.getenv('API_ID')
 API_HASH = os.getenv('API_HASH')
@@ -18,9 +19,17 @@ API_HASH = os.getenv('API_HASH')
 app = Flask(__name__)
 
 # Initialize Telegram client
-from telethon.sessions import MemorySession
-client = TelegramClient(None, api_id=API_ID, api_hash=API_HASH).start(bot_token=BOT_TOKEN)
-
+if session_string:
+    # Reuse the session string
+    client = TelegramClient(StringSession(session_string), API_ID, API_HASH)
+else:
+    # Create a new session and store the session string after the first run
+    client = TelegramClient(StringSession(), API_ID, API_HASH)
+with client:
+    # Start the client
+    client.start(bot_token=BOT_TOKEN)
+    # Save the session string to the environment or a secure location
+    session_string = client.session.save()    
 # Initialize Firebase
 cred = credentials.Certificate("./api/credentials.json")
 firebase_admin.initialize_app(cred)
