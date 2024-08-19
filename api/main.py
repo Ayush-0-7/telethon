@@ -8,7 +8,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from threading import Thread
-from keep_alive import keep_alive
+from api.keep_alive import keep_alive
 keep_alive()
 # Load environment variables
 load_dotenv()
