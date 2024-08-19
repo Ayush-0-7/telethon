@@ -11,6 +11,8 @@ from firebase_admin import firestore
 load_dotenv()
 API_ID = os.getenv('API_ID')
 API_HASH = os.getenv('API_HASH')
+PHONE = os.getenv('PHONE')
+PASS = os.getenv('PASS')
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -19,7 +21,7 @@ app = Flask(__name__)
 
 # Initialize Telegram client
 from telethon.sessions import MemorySession
-client = TelegramClient(MemorySession(), API_ID, API_HASH)
+client = TelegramClient(MemorySession(), API_ID, API_HASH).start(phone=PHONE, password=PASS)
 
 
 # Initialize Firebase
