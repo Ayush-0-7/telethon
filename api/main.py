@@ -18,7 +18,7 @@ app = Flask(__name__)
 # Flask route to confirm the server is running
 
 # Initialize Telegram client
-client = TelegramClient('session_names', API_ID, API_HASH)
+client = TelegramClient('./api/session_name', API_ID, API_HASH)
 
 # Initialize Firebase
 cred = credentials.Certificate("./api/credentials.json")
