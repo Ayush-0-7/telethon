@@ -74,6 +74,6 @@ async def my_event_handler(event):
         except Exception as err:
             print(f"An error occurred: {err}")
 
-    # Start Telegram client
-    client.start()
-    client.run_until_disconnected()
+# Start Telegram client
+client.start()
+client.run_until_disconnected()
