@@ -9,10 +9,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 # Load environment variables
 load_dotenv()
-API_ID = os.getenv('API_ID')
-API_HASH = os.getenv('API_HASH')
-PHONE = os.getenv('PHONE')
-PASS = os.getenv('PASS')
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -20,9 +17,7 @@ app = Flask(__name__)
 # Flask route to confirm the server is running
 
 # Initialize Telegram client
-from telethon.sessions import MemorySession
-client = TelegramClient(MemorySession(), API_ID, API_HASH).start(phone=PHONE, password=PASS,code=57512)
-
+client = TelegramClient(None, api_id=None, api_hash=None).start(bot_token=BOT_TOKEN)
 
 # Initialize Firebase
 cred = credentials.Certificate("./api/credentials.json")
