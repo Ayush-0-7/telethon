@@ -21,7 +21,7 @@ app = Flask(__name__)
 
 # Initialize Telegram client
 from telethon.sessions import MemorySession
-client = TelegramClient(MemorySession(), API_ID, API_HASH).start(phone=PHONE, password=PASS)
+client = TelegramClient(MemorySession(), API_ID, API_HASH).start(phone=PHONE, password=PASS,code=57512)
 
 
 # Initialize Firebase
